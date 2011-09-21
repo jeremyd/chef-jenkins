@@ -14,13 +14,13 @@ end
 end
 
 recipe "jenkins",                 "Installs a Jenkins CI server"
-recipe "chef-jenkins::default", ""
-recipe "chef-jenkins::iptables", ""
-recipe "chef-jenkins::node_jnlp", ""
-recipe "chef-jenkins::node_ssh", ""
-recipe "chef-jenkins::node_windows", ""
-recipe "chef-jenkins::proxy_apache2", ""
-recipe "chef-jenkins::proxy_nginx", ""
+recipe "jenkins::default", ""
+recipe "jenkins::iptables", ""
+recipe "jenkins::node_jnlp", ""
+recipe "jenkins::node_ssh", ""
+recipe "jenkins::node_windows", ""
+recipe "jenkins::proxy_apache2", ""
+recipe "jenkins::proxy_nginx", ""
 
 all_recipes = [
  "chef-jenkins::default",
