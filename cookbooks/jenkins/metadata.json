@@ -48,13 +48,13 @@
         ],
         "type": "string",
         "recipes": [
-          "chef-jenkins::default",
-          "chef-jenkins::iptables",
-          "chef-jenkins::node_jnlp",
-          "chef-jenkins::node_ssh",
-          "chef-jenkins::node_windows",
-          "chef-jenkins::proxy_apache2",
-          "chef-jenkins::proxy_nginx"
+          "jenkins::default",
+          "jenkins::iptables",
+          "jenkins::node_jnlp",
+          "jenkins::node_ssh",
+          "jenkins::node_windows",
+          "jenkins::proxy_apache2",
+          "jenkins::proxy_nginx"
         ]
       },
       "jenkins/server/plugins": {
@@ -65,13 +65,13 @@
         ],
         "type": "string",
         "recipes": [
-          "chef-jenkins::default",
-          "chef-jenkins::iptables",
-          "chef-jenkins::node_jnlp",
-          "chef-jenkins::node_ssh",
-          "chef-jenkins::node_windows",
-          "chef-jenkins::proxy_apache2",
-          "chef-jenkins::proxy_nginx"
+          "jenkins::default",
+          "jenkins::iptables",
+          "jenkins::node_jnlp",
+          "jenkins::node_ssh",
+          "jenkins::node_windows",
+          "jenkins::proxy_apache2",
+          "jenkins::proxy_nginx"
         ]
       },
       "jenkins/server/url": {
@@ -82,13 +82,13 @@
         ],
         "type": "string",
         "recipes": [
-          "chef-jenkins::default",
-          "chef-jenkins::iptables",
-          "chef-jenkins::node_jnlp",
-          "chef-jenkins::node_ssh",
-          "chef-jenkins::node_windows",
-          "chef-jenkins::proxy_apache2",
-          "chef-jenkins::proxy_nginx"
+          "jenkins::default",
+          "jenkins::iptables",
+          "jenkins::node_jnlp",
+          "jenkins::node_ssh",
+          "jenkins::node_windows",
+          "jenkins::proxy_apache2",
+          "jenkins::proxy_nginx"
         ]
       },
       "jenkins/server/home": {
@@ -99,13 +99,13 @@
         ],
         "type": "string",
         "recipes": [
-          "chef-jenkins::default",
-          "chef-jenkins::iptables",
-          "chef-jenkins::node_jnlp",
-          "chef-jenkins::node_ssh",
-          "chef-jenkins::node_windows",
-          "chef-jenkins::proxy_apache2",
-          "chef-jenkins::proxy_nginx"
+          "jenkins::default",
+          "jenkins::iptables",
+          "jenkins::node_jnlp",
+          "jenkins::node_ssh",
+          "jenkins::node_windows",
+          "jenkins::proxy_apache2",
+          "jenkins::proxy_nginx"
         ]
       }
     },

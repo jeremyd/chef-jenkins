@@ -23,13 +23,13 @@ recipe "jenkins::proxy_apache2", ""
 recipe "jenkins::proxy_nginx", ""
 
 all_recipes = [
- "chef-jenkins::default",
- "chef-jenkins::iptables",
- "chef-jenkins::node_jnlp",
- "chef-jenkins::node_ssh",
- "chef-jenkins::node_windows",
- "chef-jenkins::proxy_apache2",
- "chef-jenkins::proxy_nginx"
+ "jenkins::default",
+ "jenkins::iptables",
+ "jenkins::node_jnlp",
+ "jenkins::node_ssh",
+ "jenkins::node_windows",
+ "jenkins::proxy_apache2",
+ "jenkins::proxy_nginx"
 ]
 
 attribute "jenkins/server/home", :recipes => all_recipes
