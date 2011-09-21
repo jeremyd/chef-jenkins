@@ -5,14 +5,6 @@ description      "Installs and configures Jenkins CI server & slaves"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version          "0.5"
 
-recipe "jenkins",                 "Installs a Jenkins CI server"
-recipe "jenkins::node_ssh",       ""
-recipe "jenkins::node_jnlp",      ""
-recipe "jenkins::node_windows",   ""
-recipe "jenkins::iptables",       ""
-recipe "jenkins::proxy_apache2",  ""
-recipe "jenkins::proxy_nginx",    ""
-
 %w{ debian ubuntu centos redhat }.each do |os|
   supports os
 end
@@ -21,4 +13,26 @@ end
   depends cb
 end
 
-recommends "iptables"
+recipe "jenkins",                 "Installs a Jenkins CI server"
+recipe "chef-jenkins::default", ""
+recipe "chef-jenkins::iptables", ""
+recipe "chef-jenkins::node_jnlp", ""
+recipe "chef-jenkins::node_ssh", ""
+recipe "chef-jenkins::node_windows", ""
+recipe "chef-jenkins::proxy_apache2", ""
+recipe "chef-jenkins::proxy_nginx", ""
+
+all_recipes = [
+ "chef-jenkins::default",
+ "chef-jenkins::iptables",
+ "chef-jenkins::node_jnlp",
+ "chef-jenkins::node_ssh",
+ "chef-jenkins::node_windows",
+ "chef-jenkins::proxy_apache2",
+ "chef-jenkins::proxy_nginx"
+]
+
+attribute "jenkins/server/home", :recipes => all_recipes
+attribute "jenkins/server/port", :recipes => all_recipes
+attribute "jenkins/server/url", :recipes => all_recipes
+attribute "jenkins/server/plugins", :recipes => all_recipes
