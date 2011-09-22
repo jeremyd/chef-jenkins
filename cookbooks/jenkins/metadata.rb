@@ -9,7 +9,7 @@ version          "0.5"
   supports os
 end
 
-%w{ runit java }.each do |cb|
+%w{ runit java apache2 nginx }.each do |cb|
   depends cb
 end
 
