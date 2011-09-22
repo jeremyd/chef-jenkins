@@ -40,7 +40,7 @@
     "long_description": "# Description\n\nInstalls and configures Jenkins CI server & node slaves. Resource providers\nto support automation via jenkins-cli, including job create/update.\n\n# Requirements\n\n## Chef\n\n* Chef version 0.9.10 or higher\n\n## Platform\n\n* 'default' - Server installation - currently supports Red Hat/CentOS 5.x and\nUbuntu 8.x/9.x/10.x\n\n* 'node_ssh' - Any platform that is running sshd.\n\n* 'node_jnlp' - Unix platforms. (depends on runit recipe)\n\n* 'node_windows' - Windows platforms only.  Depends on .NET Framework, which can\nbe installed with the windows::dotnetfx recipe.\n\n## Cookbooks\n\nThe `default` recipe has the following cookbook pre-requisites:\n\n* [apt][apt] cookbook from Opscode for Debian/Ubuntu platforms or the\n[fnichol github fork][apt_fork] which has chef-solo support\n* [java][java] cookbook from Opscode, the [windows::java][win_java] recipe from\nthe [dougm github repo][dougm_repo], or manually installing Java 1.5 or higher\n\nThe `jenkins::node_jnlp` recipe has an additional requirement on:\n\n* [runit][runit] cookbook from Opscode\n\nThe `jenkins::node_windows` recipe has an additional requirement on:\n\n* [windows::dotnetfx][dotnet] recipe from the [dougm github repo][dougm_repo]\n\n[apt]:          http://community.opscode.com/cookbooks/apt\n[apt_fork]:     https://github.com/fnichol/chef-apt\n[java]:         http://community.opscode.com/cookbooks/java\n[win_java]:     https://github.com/dougm/site-cookbooks/tree/master/windows\n[runit]:        http://community.opscode.com/cookbooks/runit\n[dotnet]:       https://github.com/dougm/site-cookbooks/tree/master/windows\n[dougm_repo]:   https://github.com/dougm/site-cookbooks/\n\n## Java\n\nJenkins requires Java 1.5 or higher, which can be installed via the Opscode java\ncookbook or windows::java recipe.\n\n## Jenkins node authentication\n\nIf your Jenkins instance requires authentication, you'll either need to embed\nuser:pass in the `server.url` or issue a jenkins-cli.jar login command\nprior to using the jenkins::node_* recipes.  For example, define a role like so:\n\n    name \"jenkins_ssh_node\"\n    description \"cli login & register ssh slave with Jenkins\"\n    run_list %w(vmw::jenkins_login jenkins::node_ssh)\n\nWhere the jenkins_login recipe is simply:\n\n    jenkins_cli \"login --username #{node['jenkins']['username']} --password #{node['jenkins']['password']}\"\n\n# Recipes\n\n## default\n\nInstalls a Jenkins CI server using a native package where available. The\nrecipe also generates an ssh private key and stores the ssh public key in the\nnode `pubkey` attribute for use by the node recipes.\n\n## node_ssh\n\nCreates the user and group for the Jenkins slave to run as and sets\n`.ssh/authorized_keys` to the `pubkey` attribute.  The [jenkins-cli.jar][cli] is\ndownloaded from the Jenkins server and used to manage the nodes via the\n[groovy][console] cli command.  Jenkins is configured to launch a slave agent on\nthe node using its SSH [slave plugin][slave_plugin].\n\n[cli]:          http://wiki.jenkins-ci.org/display/JENKINS/Jenkins+CLI\n[console]:      http://wiki.jenkins-ci.org/display/JENKINS/Jenkins+Script+Console\n[slave_plugin]: http://wiki.jenkins-ci.org/display/JENKINS/SSH+Slaves+plugin\n\n## node_jnlp\n\nCreates the user and group for the Jenkins slave to run as and\n'/jnlpJars/slave.jar' is downloaded from the Jenkins server.  Depends on\nrunit_service from the runit cookbook.\n\n## node_windows\n\nCreates the home directory for the node slave and sets 'JENKINS_HOME' and\n'JENKINS_URL' system environment variables.  The [winsw][winsw] Windows service\nwrapper will be downloaded and installed, along with generating\n`jenkins-slave.xml` from a template.  Jenkins is configured with the node as a\n[jnlp][jnlp] slave and '/jnlpJars/slave.jar' is downloaded from the Jenkins\nserver.  The 'jenkinsslave' service will be started the first time the recipe is\nrun or if the service is not running.  The 'jenkinsslave' service will be\nrestarted if '/jnlpJars/slave.jar' has changed.  The end results is functionally\nthe same had you chosen the option to [Let Jenkins control this slave as a\nWindows service][win_service].\n\n[winsw]:        http://weblogs.java.net/blog/2008/09/29/winsw-windows-service-wrapper-less-restrictive-license\n[jnlp]:         http://wiki.jenkins-ci.org/display/JENKINS/Distributed+builds\n[win_service]:  http://wiki.jenkins-ci.org/display/JENKINS/Installing+Jenkins+as+a+Windows+service\n\n## proxy_nginx\n\nUses the nginx::source recipe from the nginx cookbook to install an HTTP\nfrontend proxy. To automatically activate this recipe set the\n`node[:jenkins][:http_proxy][:variant]` to `nginx`.\n\n## proxy_apache2\n\nUses the apache2 recipe from the apache2 cookbook to install an HTTP frontend\nproxy. To automatically activate this recipe set the\n`node[:jenkins][:http_proxy][:variant]` to `apache2`.\n\n# Attributes\n\n## `mirror`\n\nBase URL for downloading Jenkins (server)\n\n## `java_home`\n\nJava install path, used for for cli commands\n\n## `server/home`\n\nJENKINS_HOME directory\n\n## `server/user`\n\nUser the Jenkins server runs as\n\n## `server/group`\n\nJenkins user primary group\n\n## `server/port`\n\nTCP listen port for the Jenkins server\n\n## `server/url`\n\nBase URL of the Jenkins server\n\n## `server/plugins`\n\nDownload the latest version of plugins in this list, bypassing update center\n\n## `node/name`\n\nName of the node within Jenkins\n\n## `node/description`\n\nJenkins node description\n\n## `node/executors`\n\nNumber of node executors\n\n## `node/home`\n\nHome directory (\"Remote FS root\") of the node\n\n## `node/labels`\n\nNode labels\n\n## `node/mode`\n\nNode usage mode, \"normal\" or \"exclusive\" (tied jobs only)\n\n## `node/launcher`\n\nNode launch method, \"jnlp\", \"ssh\" or \"command\"\n\n## `node/availability`\n\n\"always\" keeps node on-line, \"demand\" off-lines when idle\n\n## `node/in_demand_delay`\n\nNumber of minutes for which jobs must be waiting in the queue before\nattempting to launch this slave.\n\n## `node/idle_delay`\n\nNumber of minutes that this slave must remain idle before taking it off-line.\n\n## `node/env`\n\n\"Node Properties\" -> \"Environment Variables\"\n\n## `node/user`\n\nuser the slave runs as\n\n## `node/ssh_host`\n\nHostname or IP Jenkins should connect to when launching an SSH slave\n\n## `node/ssh_port`\n\nSSH slave port\n\n## `node/ssh_user`\n\nSSH slave user name (only required if jenkins server and slave user is\ndifferent)\n\n## `node/ssh_pass`\n\nSSH slave password (not required when server is installed via default recipe)\n\n## `node/ssh_private_key`\n\njenkins master defaults to: `~/.ssh/id_rsa` (created by the default recipe)\n\n## `node/jvm_options`\n\nSSH slave JVM options\n\n## `iptables_allow`\n\nif iptables is enabled, add a rule passing 'jenkins[:server][:port]'\n\n## `http_proxy/variant`\n\nUse `nginx` or `apache2` to proxy traffic to jenkins backend (`nil` by default)\n\n## `http_proxy/www_redirect`\n\nAdd a redirect rule for 'www.*' URL requests (\"disable\" by default)\n\n## `http_proxy/listen_ports`\n\nList of HTTP ports for the HTTP proxy to listen on ([80] by default)\n\n## `http_proxy/host_name`\n\nPrimary vhost name for the HTTP proxy to respond to (`node[:fqdn]` by default)\n\n## `http_proxy/host_aliases`\n\nOptional list of other host aliases to respond to (empty by default)\n\n## `http_proxy/client_max_body_size`\n\nMax client upload size (\"1024m\" by default, nginx only)\n\n# Resources & Providers\n\n## jenkins_cli\n\nThis resource can be used to execute the Jenkins cli from your recipes. For\nexample, install plugins via update center and restart Jenkins:\n\n    %w(git URLSCM build-publisher).each do |plugin|\n      jenkins_cli \"install-plugin #{plugin}\"\n      jenkins_cli \"safe-restart\"\n    end\n\n## jenkins_node\n\nThis resource can be used to configure nodes as the 'node_ssh' and\n'node_windows' recipes do or \"Launch slave via execution of command on the\nMaster\".\n\n    jenkins_node node[:fqdn] do\n      description  \"My node for things, stuff and whatnot\"\n      executors    5\n      remote_fs    \"/var/jenkins\"\n      launcher     \"command\"\n      command      \"ssh -i my_key #{node[:fqdn]} java -jar #{remote_fs}/slave.jar\"\n      env          \"ANT_HOME\" => \"/usr/local/ant\", \"M2_REPO\" => \"/dev/null\"\n    end\n\n## jenkins_job\n\nThis resource manages jenkins jobs, supporting the following actions:\n\n    :create, :update, :delete, :build, :disable, :enable\n\nThe 'create' and 'update' actions require a jenkins job config.xml.  Example:\n\n    git_branch = 'master'\n    job_name = \"sigar-#{branch}-#{node[:os]}-#{node[:kernel][:machine]}\"\n\n    job_config = File.join(node[:jenkins][:node][:home], \"#{job_name}-config.xml\")\n\n    jenkins_job job_name do\n      action :nothing\n      config job_config\n    end\n\n    template job_config do\n      source \"sigar-jenkins-config.xml\"\n      variables :job_name => job_name, :branch => git_branch, :node => node[:fqdn]\n      notifies :update, resources(:jenkins_job => job_name), :immediately\n      notifies :build, resources(:jenkins_job => job_name), :immediately\n    end\n\n# Usage\n\n## 'manage_node' library\n\nThe script to generate groovy that manages a node can be used standalone. For\nexample:\n\n    % ruby manage_node.rb name slave-hostname remote_fs /home/jenkins ... | \\\n        java -jar jenkins-cli.jar -s http://jenkins:8080/ groovy =\n\n# Issues\n\n* CLI authentication - http://issues.jenkins-ci.org/browse/JENKINS-3796\n* CLI *-node commands fail with \"No argument is allowed: nameofslave\" - http://issues.jenkins-ci.org/browse/JENKINS-5973\n\n# Development\n\n* Source hosted at [GitHub][repo]\n* Report issues/Questions/Feature requests on [GitHub Issues][issues]\n\nPull requests are very welcome! Make sure your patches are well tested.\nIdeally create a topic branch for every seperate change you make.\n\n[repo]:   https://github.com/fnichol/chef-jenkins\n[issues]: https://github.com/fnichol/chef-jenkins/issues\n\n# License & Author\n\nThis is a downstream fork of Doug MacEachern's Hudson cookbook\n(https://github.com/dougm/site-cookbooks) and therefore deserves all the glory.\n\nAuthor:: Doug MacEachern (<dougm@vmware.com>)\n\nContributor:: Fletcher Nichol <fnichol@nichol.ca>\n\nContributor:: Roman Kamyk <rkj@go2.pl>\n\nContributor:: Darko Fabijan <darko@renderedtext.com>\n\nCopyright:: 2010, VMware, Inc\n\nLicensed under the Apache License, Version 2.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.\n",
     "name": "jenkins",
     "attributes": {
-      "jenkins/server/port": {
+      "jenkins/server/plugins": {
         "required": "optional",
         "calculated": false,
         "choice": [
@@ -57,12 +57,47 @@
           "jenkins::proxy_nginx"
         ]
       },
-      "jenkins/server/plugins": {
+      "jenkins/node/host_name": {
         "required": "optional",
         "calculated": false,
         "choice": [
 
         ],
+        "type": "string",
+        "recipes": [
+          "jenkins::default",
+          "jenkins::iptables",
+          "jenkins::node_jnlp",
+          "jenkins::node_ssh",
+          "jenkins::node_windows",
+          "jenkins::proxy_apache2",
+          "jenkins::proxy_nginx"
+        ]
+      },
+      "jenkins/node/listen_ports": {
+        "required": "optional",
+        "calculated": false,
+        "choice": [
+
+        ],
+        "type": "array",
+        "recipes": [
+          "jenkins::default",
+          "jenkins::iptables",
+          "jenkins::node_jnlp",
+          "jenkins::node_ssh",
+          "jenkins::node_windows",
+          "jenkins::proxy_apache2",
+          "jenkins::proxy_nginx"
+        ]
+      },
+      "jenkins/node/variant": {
+        "required": "optional",
+        "calculated": false,
+        "choice": [
+
+        ],
+        "default": "nginx",
         "type": "string",
         "recipes": [
           "jenkins::default",
@@ -81,6 +116,23 @@
 
         ],
         "type": "string",
+        "recipes": [
+          "jenkins::default",
+          "jenkins::iptables",
+          "jenkins::node_jnlp",
+          "jenkins::node_ssh",
+          "jenkins::node_windows",
+          "jenkins::proxy_apache2",
+          "jenkins::proxy_nginx"
+        ]
+      },
+      "jenkins/node/host_aliases": {
+        "required": "optional",
+        "calculated": false,
+        "choice": [
+
+        ],
+        "type": "array",
         "recipes": [
           "jenkins::default",
           "jenkins::iptables",

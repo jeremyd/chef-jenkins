@@ -33,6 +33,9 @@ all_recipes = [
 ]
 
 attribute "jenkins/server/home", :recipes => all_recipes
-attribute "jenkins/server/port", :recipes => all_recipes
 attribute "jenkins/server/url", :recipes => all_recipes
 attribute "jenkins/server/plugins", :recipes => all_recipes
+attribute "jenkins/node/variant", :default => "nginx", :recipes => all_recipes
+attribute "jenkins/node/listen_ports", :type => "array", :recipes => all_recipes
+attribute "jenkins/node/host_name", :recipes => all_recipes
+attribute "jenkins/node/host_aliases", :type => "array", :recipes => all_recipes
