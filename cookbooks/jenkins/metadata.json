@@ -57,24 +57,7 @@
           "jenkins::proxy_nginx"
         ]
       },
-      "jenkins/node/host_name": {
-        "required": "optional",
-        "calculated": false,
-        "choice": [
-
-        ],
-        "type": "string",
-        "recipes": [
-          "jenkins::default",
-          "jenkins::iptables",
-          "jenkins::node_jnlp",
-          "jenkins::node_ssh",
-          "jenkins::node_windows",
-          "jenkins::proxy_apache2",
-          "jenkins::proxy_nginx"
-        ]
-      },
-      "jenkins/node/listen_ports": {
+      "jenkins/http_proxy/host_aliases": {
         "required": "optional",
         "calculated": false,
         "choice": [
@@ -91,7 +74,41 @@
           "jenkins::proxy_nginx"
         ]
       },
-      "jenkins/node/variant": {
+      "jenkins/http_proxy/host_name": {
+        "required": "optional",
+        "calculated": false,
+        "choice": [
+
+        ],
+        "type": "string",
+        "recipes": [
+          "jenkins::default",
+          "jenkins::iptables",
+          "jenkins::node_jnlp",
+          "jenkins::node_ssh",
+          "jenkins::node_windows",
+          "jenkins::proxy_apache2",
+          "jenkins::proxy_nginx"
+        ]
+      },
+      "jenkins/http_proxy/listen_ports": {
+        "required": "optional",
+        "calculated": false,
+        "choice": [
+
+        ],
+        "type": "array",
+        "recipes": [
+          "jenkins::default",
+          "jenkins::iptables",
+          "jenkins::node_jnlp",
+          "jenkins::node_ssh",
+          "jenkins::node_windows",
+          "jenkins::proxy_apache2",
+          "jenkins::proxy_nginx"
+        ]
+      },
+      "jenkins/http_proxy/variant": {
         "required": "optional",
         "calculated": false,
         "choice": [
@@ -116,23 +133,6 @@
 
         ],
         "type": "string",
-        "recipes": [
-          "jenkins::default",
-          "jenkins::iptables",
-          "jenkins::node_jnlp",
-          "jenkins::node_ssh",
-          "jenkins::node_windows",
-          "jenkins::proxy_apache2",
-          "jenkins::proxy_nginx"
-        ]
-      },
-      "jenkins/node/host_aliases": {
-        "required": "optional",
-        "calculated": false,
-        "choice": [
-
-        ],
-        "type": "array",
         "recipes": [
           "jenkins::default",
           "jenkins::iptables",
